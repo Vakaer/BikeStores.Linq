@@ -20,20 +20,9 @@ namespace BikeStores.Api.Controllers
             _logger = logger;
             _customerService = customerService;
         }
-        [HttpGet("GetList")]
+        [HttpGet("GetCustomerFromEachCity")]
         public async Task<ActionResult<List<CustomerCount>>> GetCustomersList() 
         {
-            //List<Customer> customers = await _customerService.GetCustomersAsync();
-            //Table tbl = new Table("CustomerID", "firstName", "lastName", "Email", "street", "city", "state", "zipCode");
-            //foreach (var item in customers)
-            //{
-            //    //Console.WriteLine("Hello "+ item.CustomerId + "   " + item.LastName);
-            //    tbl.AddRow(item.CustomerId, item.FirstName, item.LastName, item.Email, item.Street, item.City, item.State, item.ZipCode);
-
-            //}
-            //tbl.Print();
-
-            //return customers;
 
             List<CustomerCount> customers = await _customerService.GetCustomersFromEachCityAsync();
             Table tbl = new Table("City", "CustomerCount");
@@ -41,6 +30,36 @@ namespace BikeStores.Api.Controllers
             {
                 
                 tbl.AddRow(item.State, item.Count);
+
+            }
+            tbl.Print();
+
+            return customers;
+        }
+        [HttpGet("GetList")]
+        public async Task<ActionResult<List<OrderItemAgainstEachCustomerAndOrder>>> GetOrderCustomerOrderItemsLeftJoin()
+        {
+
+            List<OrderItemAgainstEachCustomerAndOrder> customers = await _customerService.GetOrderCustomerAndOrderItemsLeftJoin();
+            Table tbl = new Table("fullName", "email", "city", "state", "orderId", "productid", "quantity", "listPrice", "discount","count");
+
+            foreach (var item in customers)
+            {
+
+                tbl.AddRow
+                    (
+                        item.fullName,
+                        item.email,
+                        item.city,
+                        item.state,
+                        item.orderId,
+                        item.productid,
+                        item.quantity,
+                        item.listPrice,
+                        item.discount,
+                        item.orderCount
+                        
+                    );
 
             }
             tbl.Print();

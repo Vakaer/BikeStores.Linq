@@ -22,5 +22,10 @@ namespace BikeStores.Api.DAL.Services.services
             return customerEntities;
         }
 
+        public async Task<List<OrderItemAgainstEachCustomerAndOrder>> GetOrderCustomerAndOrderItemsLeftJoin()
+        {
+            List<OrderItemAgainstEachCustomerAndOrder> customerAndOrders = await _customerRepository.GetOrderCustomerAndOrderItemsLeftJoin();
+            return customerAndOrders;
+        }
     }
 }

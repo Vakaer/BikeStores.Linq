@@ -23,14 +23,7 @@ namespace BikeStores.Api.DAL.Respositories.repository
         {
             _context = context;
         }
-        //public Task<List<Customer>> GetCustomersAsync()
-        //{
-        //    return Task.FromResult(new List<Customer>());
-        //}    
-        //public Task<List<BikeStoresViewModel>> GetDataAsync()
-        //{
-        //    throw new NotImplementedException();
-        //}
+        
 
         //SELECT city , COUNT(*)
         // as TotalCustomers
@@ -38,92 +31,75 @@ namespace BikeStores.Api.DAL.Respositories.repository
         //GROUP BY city
         public async Task<List<CustomerCount>> GetcustomersCity()
         {
-            var customers =  _context.Customers.ToList();
-            //var customerCount = customers.Count();
-            //var cityGroup = customers.GroupBy(x => x.City);
-            //var finalCustomers = (from c in customers
-            //                      select new
-            //                      {
-            //                          c.City,
-            //                          c.CustomerId
-            //                      }).ToList();
-            List<CustomerCount> finalCustomerslist = await _context.Customers.GroupBy(p => p.State).Select(p => new CustomerCount { State = p.Key, Count = p.Count() }).ToListAsync();
+            var finalCustomerslist = await _context.Customers.GroupBy(p => p.State)
+                                           .Select(p => new CustomerCount { State = p.Key, Count = p.Count() })
+                                           .ToListAsync();
             return finalCustomerslist;
         }
 
-        //1-- Write a query to find the Nth highest salary from the table without using TOP/limit keyword.
-        //Select Distinct s1.discount
-        //from sales.order_items s1 WHERE 3-1 = 
-        //(Select COUNT(Distinct s2.discount) 
-        //From sales.order_items s2
-        //WHERE s1.discount<s2.discount)
-        public Task<OrderItem> GetHighestDiscountAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        
-
-        public Task<List<BikeStoresViewModel>> GetOrderAgainstEachProduct()
-        {
-            throw new NotImplementedException();
-        }
 
         //2-- Which order is of which customer using LEFT JOIN on 3 Tables
 
         //SELECT CONCAT(c.first_name , ' ' , c.last_name) as CustomerName, c.email, c.city, c.state , o.order_id 
         //, T.product_id, T.quantity, T.list_price, T.discount
+
         //FROM sales.customers c
         //LEFT JOIN sales.orders o
         //ON o.customer_id = c.customer_id
         //LEFT JOIN sales.order_items T
         //ON T.order_id = o.order_id
         //order By CustomerName
-        public Task<List<BikeStoresViewModel>> GetOrderCustomerAndOrderItemsLeftJoin()
+        public async Task<List<OrderItemAgainstEachCustomerAndOrder>> GetOrderCustomerAndOrderItemsLeftJoin()
         {
-            throw new NotImplementedException();
+            IQueryable<string> CustomerName = (from cust in _context.Customers
+                                               select cust.FirstName)
+                                              .Concat
+                                              (from cust in _context.Customers
+                                               select cust.LastName);
+
+
+
+            IQueryable<OrderItemAgainstEachCustomerAndOrder> result = from cust in _context.Customers
+                         join order in _context.Orders on cust.CustomerId equals order.OrderId into orders
+                         from order in orders.DefaultIfEmpty()
+                         let oCount =
+                         (
+                             from o in _context.Orders
+                             where o.OrderId == order.OrderId
+                             select o
+                         ).Count()
+                         let fullname = cust.FirstName + " " + cust.LastName
+                         join ordIt in _context.OrderItems on order.OrderId equals ordIt.OrderId into orderItems
+                         from ordIt in orderItems.DefaultIfEmpty()
+                         orderby fullname
+                            
+                         
+                         select new OrderItemAgainstEachCustomerAndOrder
+                         {
+                             fullName = fullname,
+                             email = cust.Email,
+                             city = cust.City,
+                             state = cust.State,
+                             orderId = order.OrderId,
+                             orderCount = oCount,
+                             productid = ordIt.ProductId,
+                             quantity = ordIt.Quantity,
+                             listPrice = ordIt.ListPrice,
+                             discount = ordIt.Discount,
+                             customer = cust,
+                             order = order,
+                             orderItem = ordIt
+
+
+                         };
+
+            List<OrderItemAgainstEachCustomerAndOrder> customerAndOrders = result.Take(100).ToList();
+
+            return customerAndOrders;
+                                  
         }
 
-        //SELECT c.category_name, p.product_name, p.model_year, p.list_price
-        //FROM production.categories c
-        //RIGHT JOIN production.products p
-        //ON p.category_id = c.category_id
-        public Task<List<BikeStoresViewModel>> GetProductAndCategoryRightJoin()
-        {
-            throw new NotImplementedException();
-        }
-
-        //SELECT *
-        //FROM production.products
-        //INNER JOIN sales.order_items
-        //ON sales.order_items.product_id = production.products.product_id
-        public Task<List<BikeStoresViewModel>> GetProductAndOrderItemsInnerJoin()
-        {
-            throw new NotImplementedException();
-        }
-
-        //SELECT a.staff_id AS "Staff_ID",a.first_name AS "Staff Name",
-        //b.staff_id AS "Manager ID", b.first_name AS "Manager Name"
-        //FROM sales.staffs a, sales.staffs b
-        //WHERE a.manager_id = b.staff_id;
-        public Task<List<Staff>> GetStaffSelfJoin()
-        {
-            throw new NotImplementedException();
-        }
-
-        //SELECT p.product_name, p.list_price, p.product_id, COUNT(*)
-        //AS ORDERS
-        //FROM production.products p
-        //LEFT OUTER JOIN sales.order_items o
-        //ON o.product_id = p.product_id
-        //Where p.product_name IN ('Ritchey Timberwolf Frameset - 2016','Trek Fuel EX 8 29 - 2016')
-        //GROUP BY p.product_id,p.product_name,p.list_price
-        //HAVING COUNT(*)
-        // BETWEEN 50 AND 99
-        public Task<List<Order>> GetTotalOrdersAgainstEachProduct()
-        {
-            throw new NotImplementedException();
-        }
+       
 
         
     }

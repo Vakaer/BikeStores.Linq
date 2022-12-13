@@ -199,3 +199,7 @@ D:\GitHub\BikeStores.Linq\BikeStores.Api\BikeStores.Api\obj\Debug\net6.0\scopedc
 D:\GitHub\BikeStores.Linq\BikeStores.Api\BikeStores.Api\obj\Debug\net6.0\BikeStores.Api.csproj.CopyComplete
 D:\GitHub\BikeStores.Linq\BikeStores.Api\BikeStores.Api\obj\Debug\net6.0\BikeStores.Api.genruntimeconfig.cache
 D:\GitHub\BikeStores.Linq\BikeStores.Api\BikeStores.Api\obj\Debug\net6.0\ref\BikeStores.Api.dll
+C:\Users\DevHouse\Documents\GitHub\BikeStores.Linq\BikeStores.Api\BikeStores.Api\bin\Debug\net6.0\Microsoft.AspNetCore.JsonPatch.dll
+C:\Users\DevHouse\Documents\GitHub\BikeStores.Linq\BikeStores.Api\BikeStores.Api\bin\Debug\net6.0\Microsoft.AspNetCore.Mvc.NewtonsoftJson.dll
+C:\Users\DevHouse\Documents\GitHub\BikeStores.Linq\BikeStores.Api\BikeStores.Api\bin\Debug\net6.0\Newtonsoft.Json.dll
+C:\Users\DevHouse\Documents\GitHub\BikeStores.Linq\BikeStores.Api\BikeStores.Api\bin\Debug\net6.0\Newtonsoft.Json.Bson.dll
