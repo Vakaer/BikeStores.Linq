@@ -1,6 +1,7 @@
 ﻿using BikeStores.Api.ConsoleTable;
 using BikeStores.Api.DAL.Services.contracts;
 using BikeStores.Api.Models;
+using BikeStores.Api.ViewModel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -20,7 +21,7 @@ namespace BikeStores.Api.Controllers
             _customerService = customerService;
         }
         [HttpGet("GetList")]
-        public async Task<ActionResult<List<Customer>>> GetCustomersList() 
+        public async Task<ActionResult<List<CustomerCount>>> GetCustomersList() 
         {
             //List<Customer> customers = await _customerService.GetCustomersAsync();
             //Table tbl = new Table("CustomerID", "firstName", "lastName", "Email", "street", "city", "state", "zipCode");
@@ -34,12 +35,12 @@ namespace BikeStores.Api.Controllers
 
             //return customers;
 
-            List<Customer> customers = await _customerService.GetCustomersFromEachCityAsync();
+            List<CustomerCount> customers = await _customerService.GetCustomersFromEachCityAsync();
             Table tbl = new Table("City", "CustomerCount");
             foreach (var item in customers)
             {
                 
-                tbl.AddRow(item.City, item.CustomerId);
+                tbl.AddRow(item.State, item.Count);
 
             }
             tbl.Print();

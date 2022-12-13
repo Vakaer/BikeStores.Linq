@@ -9,9 +9,12 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using System.Text.RegularExpressions;
+using BikeStores.Api.ViewModel;
 
 namespace BikeStores.Api.DAL.Respositories.repository
 {
+   
+
     public class GenericRepository : IContract
     {
         private readonly BikeStoresContext _context;
@@ -33,7 +36,7 @@ namespace BikeStores.Api.DAL.Respositories.repository
         // as TotalCustomers
         //FROM sales.customers
         //GROUP BY city
-        public async Task<List<Customer>> GetcustomersCity()
+        public async Task<List<CustomerCount>> GetcustomersCity()
         {
             var customers =  _context.Customers.ToList();
             //var customerCount = customers.Count();
@@ -44,11 +47,8 @@ namespace BikeStores.Api.DAL.Respositories.repository
             //                          c.City,
             //                          c.CustomerId
             //                      }).ToList();
-            var finalCustomerslist =_context.Customers.GroupBy(p => p.City).Select(p => new { City = p.Key, Count = p.Count() });
-            return customers;
-            
-
-
+            List<CustomerCount> finalCustomerslist = await _context.Customers.GroupBy(p => p.State).Select(p => new CustomerCount { State = p.Key, Count = p.Count() }).ToListAsync();
+            return finalCustomerslist;
         }
 
         //1-- Write a query to find the Nth highest salary from the table without using TOP/limit keyword.
@@ -124,5 +124,7 @@ namespace BikeStores.Api.DAL.Respositories.repository
         {
             throw new NotImplementedException();
         }
+
+        
     }
 }

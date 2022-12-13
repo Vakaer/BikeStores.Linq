@@ -2,6 +2,7 @@
 using BikeStores.Api.DAL.Respositories.contracts;
 using BikeStores.Api.DAL.Services.contracts;
 using BikeStores.Api.Models;
+using BikeStores.Api.ViewModel;
 
 namespace BikeStores.Api.DAL.Services.services
 {
@@ -15,9 +16,9 @@ namespace BikeStores.Api.DAL.Services.services
         }
 
 
-        public async Task<List<Customer>> GetCustomersFromEachCityAsync()
+        public async Task<List<CustomerCount>> GetCustomersFromEachCityAsync()
         {
-            List<Customer> customerEntities = await _customerRepository.GetcustomersCity();
+            List<CustomerCount> customerEntities = await _customerRepository.GetcustomersCity();
             return customerEntities;
         }
 
