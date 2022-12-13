@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "J8z7ceHNmbItgd22cXtTEOUSTPicT1mh4h8yOOIkSsO9+6GAIwMmqVg0LCvkeX+x+qa55n7BCM9rlOXHQmIF0A==",
+  "dgSpecHash": "FUaxe6PQcG5AiX4saK/nep+HF4MzLJdKv3XbfF5r5DeXRC7zCz2N40XMHEvF7gw2qaFxChjLg40Cyi2sUucXZQ==",
   "success": true,
-  "projectFilePath": "C:\\Users\\DevHouse\\source\\repos\\BikeStores.Api\\BikeStores.Api\\BikeStores.Api.csproj",
+  "projectFilePath": "C:\\Users\\DevHouse\\Documents\\GitHub\\BikeStores.Linq\\BikeStores.Api\\BikeStores.Api\\BikeStores.Api.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\DevHouse\\.nuget\\packages\\humanizer.core\\2.8.26\\humanizer.core.2.8.26.nupkg.sha512",
     "C:\\Users\\DevHouse\\.nuget\\packages\\microsoft.csharp\\4.5.0\\microsoft.csharp.4.5.0.nupkg.sha512",

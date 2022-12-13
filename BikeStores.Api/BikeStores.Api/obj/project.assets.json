@@ -2272,11 +2272,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\DevHouse\\source\\repos\\BikeStores.Api\\BikeStores.Api\\BikeStores.Api.csproj",
+      "projectUniqueName": "C:\\Users\\DevHouse\\Documents\\GitHub\\BikeStores.Linq\\BikeStores.Api\\BikeStores.Api\\BikeStores.Api.csproj",
       "projectName": "BikeStores.Api",
-      "projectPath": "C:\\Users\\DevHouse\\source\\repos\\BikeStores.Api\\BikeStores.Api\\BikeStores.Api.csproj",
+      "projectPath": "C:\\Users\\DevHouse\\Documents\\GitHub\\BikeStores.Linq\\BikeStores.Api\\BikeStores.Api\\BikeStores.Api.csproj",
       "packagesPath": "C:\\Users\\DevHouse\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\DevHouse\\source\\repos\\BikeStores.Api\\BikeStores.Api\\obj\\",
+      "outputPath": "C:\\Users\\DevHouse\\Documents\\GitHub\\BikeStores.Linq\\BikeStores.Api\\BikeStores.Api\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\DevHouse\\AppData\\Roaming\\NuGet\\NuGet.Config",
