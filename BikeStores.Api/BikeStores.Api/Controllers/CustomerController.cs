@@ -36,7 +36,7 @@ namespace BikeStores.Api.Controllers
 
             return customers;
         }
-        [HttpGet("GetList")]
+        [HttpGet("GetCustomerOrderAndOrderItemsLeftJoin")]
         public async Task<ActionResult<List<OrderItemAgainstEachCustomerAndOrder>>> GetOrderCustomerOrderItemsLeftJoin()
         {
 
@@ -66,6 +66,21 @@ namespace BikeStores.Api.Controllers
 
             return customers;
         }
+
+        [HttpGet("GetOrderCountAgainstProduct")]
+        public async Task<ActionResult<List<OrderCount>>> GetTotalOrdersAgainstProduct()
+        {
+            List<OrderCount> orders = await _customerService.GetTotalOrdersAgainstEachProduct();
+            Table tbl = new Table("ProductId", "ProductName", "OrderCount");
+
+            foreach (OrderCount item in orders)
+            {
+                tbl.AddRow(item.productId,item.productName, item.OrdersCount);
+            }
+            tbl.Print();
+            return orders;
+        }
+
         [HttpGet("{id:int}", Name = "Method-Id")]
         //[("Adds a new pet using the properties supplied, returns a GUID reference for the pet created.")]
         

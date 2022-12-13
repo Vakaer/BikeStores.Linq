@@ -27,5 +27,11 @@ namespace BikeStores.Api.DAL.Services.services
             List<OrderItemAgainstEachCustomerAndOrder> customerAndOrders = await _customerRepository.GetOrderCustomerAndOrderItemsLeftJoin();
             return customerAndOrders;
         }
+
+        public async Task<List<OrderCount>> GetTotalOrdersAgainstEachProduct()
+        {
+           List<OrderCount> orderCounts = await _customerRepository.GetTotalOrdersAgainstEachProduct();
+            return orderCounts;
+        }
     }
 }

@@ -31,7 +31,7 @@ namespace BikeStores.Api.DAL.Respositories.repository
         //GROUP BY city
         public async Task<List<CustomerCount>> GetcustomersCity()
         {
-            var finalCustomerslist = await _context.Customers.GroupBy(p => p.State)
+            List<CustomerCount> finalCustomerslist = await _context.Customers.GroupBy(p => p.State)
                                            .Select(p => new CustomerCount { State = p.Key, Count = p.Count() })
                                            .ToListAsync();
             return finalCustomerslist;
@@ -96,11 +96,50 @@ namespace BikeStores.Api.DAL.Respositories.repository
             List<OrderItemAgainstEachCustomerAndOrder> customerAndOrders = result.Take(100).ToList();
 
             return customerAndOrders;
-                                  
+
         }
 
-       
+        //SELECT product_id, COUNT(*)
+        // as TotalOrdersForEachProduct
+        //FROM sales.order_items
+        //GROUP BY product_id
+        public async Task<List<OrderCount>> GetTotalOrdersAgainstEachProduct()
+        {
+            var ordersCount = _context.OrderItems
+                                           .GroupBy(p => p.ProductId)
+                                           .Select( group => new OrderCount
+                                           {
+                                               productId = group.Key,
+                                               OrdersCount = group.Count()
+                                           })
+                                           .OrderBy(p => p.productId);
+            IEnumerable<OrderCount> orderCountsList = (from p in _context.Products
+                                 join ordIt in _context.OrderItems on p.ProductId equals ordIt.ProductId into productItems
+                                 from ordIt in productItems.DefaultIfEmpty()
+                                 let Ocount = (from o in _context.OrderItems
+                                               where o.OrderId == ordIt.OrderId
+                                               select o)
+                                 orderby p.ProductName
+                                 group p by new
+                                 {
+                                     p.ProductId,
+                                     p.ProductName
 
-        
+                                 } into grp
+                                 select new OrderCount
+                                 {
+                                     productId = grp.Key.ProductId,
+                                     productName = grp.Key.ProductName,
+                                     OrdersCount = grp.Count()
+
+                                 });
+                                 
+                                 
+                                 
+            List<OrderCount> orderCountsLst =  orderCountsList.ToList();
+            return orderCountsLst;
+                                           
+                                           
+        }
     }
 }
