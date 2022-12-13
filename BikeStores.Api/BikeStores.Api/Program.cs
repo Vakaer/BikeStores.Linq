@@ -29,7 +29,7 @@ namespace BikeStores.Api
 
             builder.Services.AddDbContext<BikeStoresContext>(
             options => options.UseSqlServer("name=ConnectionStrings:Default"));
-
+            Console.WriteLine("connected");
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
 
@@ -61,11 +61,7 @@ namespace BikeStores.Api
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
-                app.UseSwaggerUI(options =>
-                {
-                    options.SwaggerEndpoint("swagger.json", "v1");
-                    options.RoutePrefix = string.Empty;
-                });
+                app.UseSwaggerUI();
             }
 
             app.UseHttpsRedirection();

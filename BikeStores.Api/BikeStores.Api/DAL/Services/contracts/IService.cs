@@ -4,6 +4,6 @@ namespace BikeStores.Api.DAL.Services.contracts
 {
     public interface IService
     {
-        Task<List<Customer>> GetCustomersAsync();
+        Task<List<Customer>> GetCustomersFromEachCityAsync();
     }
 }

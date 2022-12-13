@@ -20,22 +20,35 @@ namespace BikeStores.Api.DAL.Respositories.repository
         {
             _context = context;
         }
-        public async Task<List<Customer>> GetCustomersAsync()
-        {
-           return await _context.Customers.Take(20).ToListAsync();
-        } 
-        public Task<List<BikeStoresViewModel>> GetDataAsync()
-        {
-            throw new NotImplementedException();
-        }
+        //public Task<List<Customer>> GetCustomersAsync()
+        //{
+        //    return Task.FromResult(new List<Customer>());
+        //}    
+        //public Task<List<BikeStoresViewModel>> GetDataAsync()
+        //{
+        //    throw new NotImplementedException();
+        //}
 
         //SELECT city , COUNT(*)
         // as TotalCustomers
         //FROM sales.customers
         //GROUP BY city
-        public Task<List<Customer>> GetcustomersFromEachCity()
+        public async Task<List<Customer>> GetcustomersCity()
         {
-            throw new NotImplementedException();
+            var customers =  _context.Customers.ToList();
+            //var customerCount = customers.Count();
+            //var cityGroup = customers.GroupBy(x => x.City);
+            //var finalCustomers = (from c in customers
+            //                      select new
+            //                      {
+            //                          c.City,
+            //                          c.CustomerId
+            //                      }).ToList();
+            var finalCustomerslist =_context.Customers.GroupBy(p => p.City).Select(p => new { City = p.Key, Count = p.Count() });
+            return customers;
+            
+
+
         }
 
         //1-- Write a query to find the Nth highest salary from the table without using TOP/limit keyword.

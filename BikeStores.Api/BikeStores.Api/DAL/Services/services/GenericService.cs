@@ -15,9 +15,9 @@ namespace BikeStores.Api.DAL.Services.services
         }
 
 
-        public async Task<List<Customer>> GetCustomersAsync()
+        public async Task<List<Customer>> GetCustomersFromEachCityAsync()
         {
-            List<Customer> customerEntities = await _customerRepository.GetCustomersAsync();
+            List<Customer> customerEntities = await _customerRepository.GetcustomersCity();
             return customerEntities;
         }
 

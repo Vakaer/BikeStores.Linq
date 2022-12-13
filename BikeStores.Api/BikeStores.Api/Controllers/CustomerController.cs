@@ -21,14 +21,26 @@ namespace BikeStores.Api.Controllers
         }
         [HttpGet("GetList")]
         public async Task<ActionResult<List<Customer>>> GetCustomersList() 
-        { 
-            List<Customer> customers = await _customerService.GetCustomersAsync();
-            Table tbl = new Table("CustomerID", "firstName", "lastName", "Email", "street", "city", "state", "zipCode");
+        {
+            //List<Customer> customers = await _customerService.GetCustomersAsync();
+            //Table tbl = new Table("CustomerID", "firstName", "lastName", "Email", "street", "city", "state", "zipCode");
+            //foreach (var item in customers)
+            //{
+            //    //Console.WriteLine("Hello "+ item.CustomerId + "   " + item.LastName);
+            //    tbl.AddRow(item.CustomerId, item.FirstName, item.LastName, item.Email, item.Street, item.City, item.State, item.ZipCode);
+
+            //}
+            //tbl.Print();
+
+            //return customers;
+
+            List<Customer> customers = await _customerService.GetCustomersFromEachCityAsync();
+            Table tbl = new Table("City", "CustomerCount");
             foreach (var item in customers)
             {
-                //Console.WriteLine("Hello "+ item.CustomerId + "   " + item.LastName);
-                tbl.AddRow(item.CustomerId, item.FirstName, item.LastName, item.Email, item.Street, item.City, item.State, item.ZipCode);
                 
+                tbl.AddRow(item.City, item.CustomerId);
+
             }
             tbl.Print();
 
