@@ -1,5 +1,4 @@
-﻿
-using BikeStores.Api.DAL.Respositories.contracts;
+﻿using BikeStores.Api.DAL.Respositories.contracts;
 using BikeStores.Api.Models;
 using BikeStores.Api.ViewModel;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +10,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using System.Text.RegularExpressions;
 using BikeStores.Api.ViewModel;
 using System.Security.Cryptography;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 
 namespace BikeStores.Api.DAL.Respositories.repository
 {
@@ -41,60 +41,63 @@ namespace BikeStores.Api.DAL.Respositories.repository
 
         //2-- Which order is of which customer using LEFT JOIN on 3 Tables
 
-        //SELECT CONCAT(c.first_name , ' ' , c.last_name) as CustomerName, c.email, c.city, c.state , o.order_id 
-        //, T.product_id, T.quantity, T.list_price, T.discount
+        //select concat(c.first_name , ' ' , c.last_name) as customername, c.email, c.city, c.state , o.order_id 
+        //, t.product_id, t.quantity, t.list_price, t.discount
 
-        //FROM sales.customers c
-        //LEFT JOIN sales.orders o
-        //ON o.customer_id = c.customer_id
-        //LEFT JOIN sales.order_items T
-        //ON T.order_id = o.order_id
-        //order By CustomerName
+        //from sales.customers c
+        //left join sales.orders o
+        //on o.customer_id = c.customer_id
+        //left join sales.order_items t
+        //on t.order_id = o.order_id
+        //order by customername
         public async Task<List<OrderItemAgainstEachCustomerAndOrder>> GetOrderCustomerAndOrderItemsLeftJoin()
         {
-            IQueryable<string> CustomerName = (from cust in _context.Customers
-                                               select cust.FirstName)
-                                              .Concat
-                                              (from cust in _context.Customers
-                                               select cust.LastName);
+            //IQueryable<string> CustomerName = (from cust in _context.Customers
+            //                                   select cust.FirstName)
+            //                                  .Concat
+            //                                  (from cust in _context.Customers
+            //                                   select cust.LastName);
 
 
 
-            IQueryable<OrderItemAgainstEachCustomerAndOrder> result = from cust in _context.Customers
-                         join order in _context.Orders on cust.CustomerId equals order.OrderId into orders
-                         from order in orders.DefaultIfEmpty()
-                         let oCount =
-                         (
-                             from o in _context.Orders
-                             where o.OrderId == order.OrderId
-                             select o
-                         ).Count()
-                         let fullname = cust.FirstName + " " + cust.LastName
-                         join ordIt in _context.OrderItems on order.OrderId equals ordIt.OrderId into orderItems
-                         from ordIt in orderItems.DefaultIfEmpty()
-                         orderby fullname
-                            
+            IQueryable<OrderItemAgainstEachCustomerAndOrder> result = (from cust in _context.Customers
+                                                                      join order in _context.Orders on cust.CustomerId equals order.CustomerId into orders
+                                                                      from order in orders.DefaultIfEmpty()
+                                                                      let oCount =
+                                                                      (
+                                                                          from o in _context.Orders
+                                                                          where o.OrderId == order.OrderId
+                                                                          select o
+                                                                      ).Count()
+                                                                      let fullname = cust.FirstName + " " + cust.LastName
+                                                                      join ordIt in _context.OrderItems on order.OrderId equals ordIt.OrderId into orderItems
+                                                                      from ordIt in orderItems.DefaultIfEmpty()
+                                                                      orderby fullname
+
+
+                                                                      select new OrderItemAgainstEachCustomerAndOrder
+                                                                      {
+                                                                          fullName = fullname,
+                                                                          email = cust.Email,
+                                                                          city = cust.City,
+                                                                          firstName = cust.FirstName,
+                                                                          lastName = cust.LastName,
+                                                                          state = cust.State,
+                                                                          orderId = order.OrderId,
+                                                                          orderCount = oCount,
+                                                                          productid = ordIt.ProductId,
+                                                                          quantity = ordIt.Quantity,
+                                                                          listPrice = ordIt.ListPrice,
+                                                                          discount = ordIt.Discount,
+                                                                          customer = cust,
+                                                                          order = order,
+                                                                          orderItem = ordIt
+
+
+                                                                      }).Take(100);
                          
-                         select new OrderItemAgainstEachCustomerAndOrder
-                         {
-                             fullName = fullname,
-                             email = cust.Email,
-                             city = cust.City,
-                             state = cust.State,
-                             orderId = order.OrderId,
-                             orderCount = oCount,
-                             productid = ordIt.ProductId,
-                             quantity = ordIt.Quantity,
-                             listPrice = ordIt.ListPrice,
-                             discount = ordIt.Discount,
-                             customer = cust,
-                             order = order,
-                             orderItem = ordIt
 
-
-                         };
-
-            List<OrderItemAgainstEachCustomerAndOrder> customerAndOrders =await  result.Take(100).ToListAsync();
+            List<OrderItemAgainstEachCustomerAndOrder> customerAndOrders =await  result.ToListAsync();
 
             return customerAndOrders;
 
@@ -119,7 +122,7 @@ namespace BikeStores.Api.DAL.Respositories.repository
             return query;
         }
 
-       
+
 
         //SELECT product_id, COUNT(*)
         // as TotalOrdersForEachProduct
@@ -196,39 +199,61 @@ namespace BikeStores.Api.DAL.Respositories.repository
         }
 
 
-        //Select Distinct s1.discount 
+        //Select Distinct s1.discount
         //from sales.order_items s1 WHERE 2-1 = 
         //(Select COUNT(Distinct s2.discount)
         //From sales.order_items s2
         //WHERE s1.discount<s2.discount)
-       
+
+
 
         public async Task<List<HighestDiscount>> GetHighestDiscountAsync(int number)
         {
-            List<HighestDiscount> query = await(from o in _context.OrderItems
-                                                group o by o.Discount into gr
-                                                select new HighestDiscount
-                                                {
-                                                    discount = gr.OrderByDescending(d => d.Discount)
-                                                               .Distinct()
-                                                               .Skip(number - 1)
-                                                               .FirstOrDefault()
-                                                               .Discount
+            List<HighestDiscount> query = await (from o in _context.OrderItems
+                                                 group o by o.Discount into gr
+                                                 select new HighestDiscount
+                                                 {
+                                                     discount = gr.OrderByDescending(d => d.Discount)
+                                                                .Distinct()
+                                                                .Skip(number - 1)
+                                                                .FirstOrDefault()
+                                                                .Discount
 
-                                                }).ToListAsync();
+                                                 }).ToListAsync();
+
+            //var query = await (from s1 in _context.OrderItems where 1 >
+            //                                     (from s2 in _context.OrderItems where 
+            //                                      s2.Discount < s1.Discount select s2.Discount).Distinct().Count() 
+            //                                     select s1.Discount).Distinct().ToListAsync();
             return query;
         }
+//        Select Distinct s1.discount
+//from sales.order_items s1 WHERE 1-1= 
+//        (Select COUNT(Distinct s2.discount)
+//        From sales.order_items s2
+//        WHERE s1.discount<s2.discount)
+
 
         public async Task<List<decimal>> GetHighestDiscount(int number)
         {
-            var alternateQuery =await (from o in _context.OrderItems
-                                  group o by o.Discount into grp
-                                  let highdesc = (grp.OrderByDescending(d => d.Discount).Distinct().Skip(number - 1).FirstOrDefault().Discount) 
-                                  where grp.Key == highdesc
-                                  select grp.Key
-                                  ).Distinct().ToListAsync();
-            
-            return alternateQuery;
+            /*var alternateQuery = await (from o in _context.OrderItems
+                                        group o by o.Discount into grp
+                                        let highdesc = (grp.OrderByDescending(d => d.Discount).Distinct().Skip(number - 1).FirstOrDefault().Discount)
+                                        where grp.Key == highdesc
+                                        select grp.Key
+                                  ).Distinct().ToListAsync()*/;
+
+           List<decimal> query = await (from s1 in _context.OrderItems
+                           where number - 1 ==
+                                                 (from s2 in _context.OrderItems
+                                                  where
+
+                                                  s2.Discount > s1.Discount
+                                                  select s2.Discount
+                                                   ).Distinct().Count()
+                           select s1.Discount ).Distinct().ToListAsync();
+
+            return query;
         }
     }
 }
