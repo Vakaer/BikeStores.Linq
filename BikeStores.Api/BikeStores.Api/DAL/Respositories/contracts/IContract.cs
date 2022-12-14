@@ -5,13 +5,13 @@ namespace BikeStores.Api.DAL.Respositories.contracts
 {
     public interface IContract
     {
-        //Task<List<Customer>> GetCustomersAsync();
-        //Task<List<BikeStoresViewModel>> GetDataAsync();
-        //Task<OrderItem> GetHighestDiscountAsync();
+
+        Task<List<HighestDiscount>> GetHighestDiscountAsync(int number);
+        Task<List<decimal>> GetHighestDiscount(int number);
         Task<List<OrderItemAgainstEachCustomerAndOrder>> GetOrderCustomerAndOrderItemsLeftJoin();
         Task<List<ProductNamePriceForCategory>> GetProductAndCategoryRightJoin();
-        //Task<List<BikeStoresViewModel>> GetProductAndOrderItemsInnerJoin();
-        //Task<List<Staff>> GetStaffSelfJoin();
+        Task<List<ProductsOrderItemsInnerJoin>> GetProductAndOrderItemsInnerJoin();
+        Task<List<StaffSelfJoin>> GetStaffSelfJoin();
         Task<List<CustomerCount>> GetcustomersCity();
         Task<List<OrderCount>> GetTotalOrdersAgainstEachProduct();
         //Task<List<BikeStoresViewModel>> GetOrderAgainstEachProduct();

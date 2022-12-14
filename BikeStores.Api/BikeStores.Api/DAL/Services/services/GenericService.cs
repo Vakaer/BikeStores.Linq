@@ -3,6 +3,7 @@ using BikeStores.Api.DAL.Respositories.contracts;
 using BikeStores.Api.DAL.Services.contracts;
 using BikeStores.Api.Models;
 using BikeStores.Api.ViewModel;
+using System.Collections.Generic;
 
 namespace BikeStores.Api.DAL.Services.services
 {
@@ -28,16 +29,34 @@ namespace BikeStores.Api.DAL.Services.services
             return customerAndOrders;
         }
 
+        public async Task<List<ProductsOrderItemsInnerJoin>> GetProdAndOrdItemsInnerJoin()
+        {
+            List<ProductsOrderItemsInnerJoin> productsOrderItems = await _customerRepository.GetProductAndOrderItemsInnerJoin();
+            return productsOrderItems;
+        }
+
         public async Task<List<ProductNamePriceForCategory>> GetProductCategoryRightJoin()
         {
             List<ProductNamePriceForCategory> productNamePriceForCategories = await _customerRepository.GetProductAndCategoryRightJoin();
             return productNamePriceForCategories;
         }
 
+        public async Task<List<StaffSelfJoin>> GetStaffManagerJoin()
+        {
+            List<StaffSelfJoin> joins = await _customerRepository.GetStaffSelfJoin();
+            return joins;
+        }
+
         public async Task<List<OrderCount>> GetTotalOrdersAgainstEachProduct()
         {
            List<OrderCount> orderCounts = await _customerRepository.GetTotalOrdersAgainstEachProduct();
             return orderCounts;
+        }
+
+        public async Task<List<decimal>> HighestDiscount(int number)
+        {
+            List<decimal> highestDiscounts = await _customerRepository.GetHighestDiscount(number);
+            return highestDiscounts;
         }
     }
 }

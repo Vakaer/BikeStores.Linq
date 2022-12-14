@@ -10,6 +10,7 @@ using System.ComponentModel;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using System.Text.RegularExpressions;
 using BikeStores.Api.ViewModel;
+using System.Security.Cryptography;
 
 namespace BikeStores.Api.DAL.Respositories.repository
 {
@@ -118,6 +119,8 @@ namespace BikeStores.Api.DAL.Respositories.repository
             return query;
         }
 
+       
+
         //SELECT product_id, COUNT(*)
         // as TotalOrdersForEachProduct
         //FROM sales.order_items
@@ -153,6 +156,79 @@ namespace BikeStores.Api.DAL.Respositories.repository
             return orderCountsList;
                                            
                                            
+        }
+
+        //SELECT a.first_name AS "Staff Name",
+        //b.first_name AS "Manager Name"
+        //FROM sales.staffs a, sales.staffs b
+        //WHERE a.manager_id = b.staff_id;
+        public async Task<List<StaffSelfJoin>> GetStaffSelfJoin()
+        {
+            List<StaffSelfJoin> SelfJoinQuery =await (from s in _context.Set<Staff>()
+                                join s1 in _context.Set<Staff>() on s.StaffId equals s1.ManagerId
+                                select new StaffSelfJoin
+                                {
+                                    staffName = s.FirstName + " " + s.LastName,
+                                    managerName = s1.FirstName + " " + s.LastName,
+                                }).ToListAsync();
+            return SelfJoinQuery;
+        }
+
+
+        //SELECT p.product_id,p.product_name, o.list_price,o.discount
+        //FROM production.products As p
+        //INNER JOIN sales.order_items As o
+        //ON p.product_id = o.product_id
+        public async Task<List<ProductsOrderItemsInnerJoin>> GetProductAndOrderItemsInnerJoin()
+        {
+            List<ProductsOrderItemsInnerJoin> innerJoinQuery = await (from p in _context.Set<Product>()
+                                  join o in _context.Set<OrderItem>() on p.ProductId equals o.ProductId
+                                  select new ProductsOrderItemsInnerJoin
+                                  {
+                                      productId = p.ProductId,
+                                      productName = p.ProductName,
+                                      listPrice = p.ListPrice,
+                                      orderId = o.OrderId,
+                                      discount = o.Discount
+
+                                  }).Take(20).ToListAsync();
+            return innerJoinQuery;
+        }
+
+
+        //Select Distinct s1.discount 
+        //from sales.order_items s1 WHERE 2-1 = 
+        //(Select COUNT(Distinct s2.discount)
+        //From sales.order_items s2
+        //WHERE s1.discount<s2.discount)
+       
+
+        public async Task<List<HighestDiscount>> GetHighestDiscountAsync(int number)
+        {
+            List<HighestDiscount> query = await(from o in _context.OrderItems
+                                                group o by o.Discount into gr
+                                                select new HighestDiscount
+                                                {
+                                                    discount = gr.OrderByDescending(d => d.Discount)
+                                                               .Distinct()
+                                                               .Skip(number - 1)
+                                                               .FirstOrDefault()
+                                                               .Discount
+
+                                                }).ToListAsync();
+            return query;
+        }
+
+        public async Task<List<decimal>> GetHighestDiscount(int number)
+        {
+            var alternateQuery =await (from o in _context.OrderItems
+                                  group o by o.Discount into grp
+                                  let highdesc = (grp.OrderByDescending(d => d.Discount).Distinct().Skip(number - 1).FirstOrDefault().Discount) 
+                                  where grp.Key == highdesc
+                                  select grp.Key
+                                  ).Distinct().ToListAsync();
+            
+            return alternateQuery;
         }
     }
 }

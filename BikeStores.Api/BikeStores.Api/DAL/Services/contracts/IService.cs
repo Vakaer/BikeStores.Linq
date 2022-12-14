@@ -9,5 +9,8 @@ namespace BikeStores.Api.DAL.Services.contracts
         Task<List<OrderItemAgainstEachCustomerAndOrder>> GetOrderCustomerAndOrderItemsLeftJoin();
         Task<List<OrderCount>> GetTotalOrdersAgainstEachProduct();
         Task<List<ProductNamePriceForCategory>> GetProductCategoryRightJoin();
+        Task<List<StaffSelfJoin>> GetStaffManagerJoin();
+        Task<List<ProductsOrderItemsInnerJoin>> GetProdAndOrdItemsInnerJoin();
+        Task<List<decimal>> HighestDiscount(int number);
     }
 }
