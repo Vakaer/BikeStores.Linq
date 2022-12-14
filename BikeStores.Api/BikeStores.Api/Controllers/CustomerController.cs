@@ -88,5 +88,12 @@ namespace BikeStores.Api.Controllers
         {
             return Ok(id);
         }
+        [HttpGet("{name:string}", Name = "Method-name")]
+        //[("Adds a new pet using the properties supplied, returns a GUID reference for the pet created.")]
+
+        public IActionResult ExecuteMethodName([FromBody] string name)
+        {
+            return Ok(name);
+        }
     }
 }
