@@ -71,14 +71,28 @@ namespace BikeStores.Api.Controllers
         public async Task<ActionResult<List<OrderCount>>> GetTotalOrdersAgainstProduct()
         {
             List<OrderCount> orders = await _customerService.GetTotalOrdersAgainstEachProduct();
-            Table tbl = new Table("ProductId", "ProductName", "OrderCount");
+            Table tbl = new Table("ProductName", "OrderCount");
 
             foreach (OrderCount item in orders)
             {
-                tbl.AddRow(item.productId,item.productName, item.OrdersCount);
+                tbl.AddRow(item.productName, item.OrdersCount);
             }
             tbl.Print();
             return orders;
+        }
+
+        [HttpGet("GetProductCategoryRightJoin")]
+        public async Task<ActionResult<List<ProductNamePriceForCategory>>> ProductCategoryRightJoin()
+        {
+            List<ProductNamePriceForCategory> products = await _customerService.GetProductCategoryRightJoin();
+            Table tbl = new Table("categoryName","ProductName", "modelYear", "ListPrice");
+
+            foreach (ProductNamePriceForCategory item in products)
+            {
+                tbl.AddRow(item.categoryName, item.productName, item.modelYear, item.listPrice);
+            }
+            tbl.Print();
+            return products;
         }
 
         [HttpGet("{id:int}", Name = "Method-Id")]
@@ -88,12 +102,6 @@ namespace BikeStores.Api.Controllers
         {
             return Ok(id);
         }
-        [HttpGet("{name:string}", Name = "Method-name")]
-        //[("Adds a new pet using the properties supplied, returns a GUID reference for the pet created.")]
-
-        public IActionResult ExecuteMethodName([FromBody] string name)
-        {
-            return Ok(name);
-        }
+        
     }
 }

@@ -8,5 +8,6 @@ namespace BikeStores.Api.DAL.Services.contracts
         Task<List<CustomerCount>> GetCustomersFromEachCityAsync();
         Task<List<OrderItemAgainstEachCustomerAndOrder>> GetOrderCustomerAndOrderItemsLeftJoin();
         Task<List<OrderCount>> GetTotalOrdersAgainstEachProduct();
+        Task<List<ProductNamePriceForCategory>> GetProductCategoryRightJoin();
     }
 }

@@ -93,10 +93,29 @@ namespace BikeStores.Api.DAL.Respositories.repository
 
                          };
 
-            List<OrderItemAgainstEachCustomerAndOrder> customerAndOrders = result.Take(100).ToList();
+            List<OrderItemAgainstEachCustomerAndOrder> customerAndOrders =await  result.Take(100).ToListAsync();
 
             return customerAndOrders;
 
+        }
+
+        //SELECT  c.category_name, p.product_name, p.model_year, p.list_price
+        //FROM production.categories c
+        //RIGHT JOIN production.products p
+        //ON p.category_id = c.category_id
+        public async Task<List<ProductNamePriceForCategory>> GetProductAndCategoryRightJoin()
+        {
+            List<ProductNamePriceForCategory> query = await (from p in _context.Products
+                        join c in _context.Categories on p.CategoryId equals c.CategoryId into joined
+                        from j in joined.DefaultIfEmpty()
+                        select new ProductNamePriceForCategory
+                        {
+                            categoryName = j.CategoryName,
+                            productName = p.ProductName,
+                            modelYear = p.ModelYear,
+                            listPrice = p.ListPrice
+                        }).Take(20).ToListAsync();
+            return query;
         }
 
         //SELECT product_id, COUNT(*)
@@ -111,33 +130,27 @@ namespace BikeStores.Api.DAL.Respositories.repository
                                            {
                                                productId = group.Key,
                                                OrdersCount = group.Count()
+                                              
                                            })
-                                           .OrderBy(p => p.productId);
-            IEnumerable<OrderCount> orderCountsList = (from p in _context.Products
+                                           .OrderBy(p => p.productId).ToList();
+            List<OrderCount> orderCountsList = (from p in _context.Products
                                  join ordIt in _context.OrderItems on p.ProductId equals ordIt.ProductId into productItems
                                  from ordIt in productItems.DefaultIfEmpty()
-                                 let Ocount = (from o in _context.OrderItems
-                                               where o.OrderId == ordIt.OrderId
-                                               select o)
-                                 orderby p.ProductName
-                                 group p by new
+                                
+                                   group p by p.ProductName into grp
+                                   where grp.Count() < 10 
+                                   select new OrderCount
                                  {
-                                     p.ProductId,
-                                     p.ProductName
-
-                                 } into grp
-                                 select new OrderCount
-                                 {
-                                     productId = grp.Key.ProductId,
-                                     productName = grp.Key.ProductName,
+                                    
+                                     productName = grp.Key,
                                      OrdersCount = grp.Count()
+                                     
 
-                                 });
-                                 
-                                 
-                                 
-            List<OrderCount> orderCountsLst =  orderCountsList.ToList();
-            return orderCountsLst;
+                                 }).ToList();
+
+
+             
+            return orderCountsList;
                                            
                                            
         }

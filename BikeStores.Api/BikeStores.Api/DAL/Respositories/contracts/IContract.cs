@@ -9,7 +9,7 @@ namespace BikeStores.Api.DAL.Respositories.contracts
         //Task<List<BikeStoresViewModel>> GetDataAsync();
         //Task<OrderItem> GetHighestDiscountAsync();
         Task<List<OrderItemAgainstEachCustomerAndOrder>> GetOrderCustomerAndOrderItemsLeftJoin();
-        //Task<List<BikeStoresViewModel>> GetProductAndCategoryRightJoin();
+        Task<List<ProductNamePriceForCategory>> GetProductAndCategoryRightJoin();
         //Task<List<BikeStoresViewModel>> GetProductAndOrderItemsInnerJoin();
         //Task<List<Staff>> GetStaffSelfJoin();
         Task<List<CustomerCount>> GetcustomersCity();
