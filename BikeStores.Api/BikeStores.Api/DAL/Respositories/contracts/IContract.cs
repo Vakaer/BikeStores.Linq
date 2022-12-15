@@ -6,7 +6,6 @@ namespace BikeStores.Api.DAL.Respositories.contracts
     public interface IContract
     {
 
-        Task<List<HighestDiscount>> GetHighestDiscountAsync(int number);
         Task<List<decimal>> GetHighestDiscount(int number);
         Task<List<OrderItemAgainstEachCustomerAndOrder>> GetOrderCustomerAndOrderItemsLeftJoin();
         Task<List<ProductNamePriceForCategory>> GetProductAndCategoryRightJoin();

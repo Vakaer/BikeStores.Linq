@@ -22,8 +22,8 @@ namespace BikeStores.Api.Controllers
             _logger = logger;
             _customerService = customerService;
         }
-        [HttpGet("GetCustomerFromEachCity")]
-        public async Task<ActionResult<List<CustomerCount>>> GetCustomerFromEachCity() 
+        [HttpGet("GetcustomersCity")]
+        public async Task<ActionResult<List<CustomerCount>>> GetcustomersCity() 
         {
 
             List<CustomerCount> customers = await _customerService.GetCustomersFromEachCityAsync();
@@ -38,8 +38,8 @@ namespace BikeStores.Api.Controllers
 
             return customers;
         }
-        [HttpGet("GetCustomerOrderAndOrderItemsLeftJoin")]
-        public async Task<ActionResult<List<OrderItemAgainstEachCustomerAndOrder>>> GetCustomerOrderAndOrderItemsLeftJoin()
+        [HttpGet("GetOrderCustomerAndOrderItemsLeftJoin")]
+        public async Task<ActionResult<List<OrderItemAgainstEachCustomerAndOrder>>> GetOrderCustomerAndOrderItemsLeftJoin()
         {
 
             List<OrderItemAgainstEachCustomerAndOrder> customers = await _customerService.GetOrderCustomerAndOrderItemsLeftJoin();
@@ -68,8 +68,8 @@ namespace BikeStores.Api.Controllers
             return customers;
         }
 
-        [HttpGet("GetOrderCountAgainstProduct")]
-        public async Task<ActionResult<List<OrderCount>>> GetOrderCountAgainstProduct()
+        [HttpGet("GetTotalOrdersAgainstEachProduct")]
+        public async Task<ActionResult<List<OrderCount>>> GetTotalOrdersAgainstEachProduct()
         {
             List<OrderCount> orders = await _customerService.GetTotalOrdersAgainstEachProduct();
             Table tbl = new Table("productId", "ProductName", "OrderCount");
@@ -82,8 +82,8 @@ namespace BikeStores.Api.Controllers
             return orders;
         }
 
-        [HttpGet("GetProductCategoryRightJoin")]
-        public async Task<ActionResult<List<ProductNamePriceForCategory>>> GetProductCategoryRightJoin()
+        [HttpGet("GetProductAndCategoryRightJoin")]
+        public async Task<ActionResult<List<ProductNamePriceForCategory>>> GetProductAndCategoryRightJoin()
         {
             List<ProductNamePriceForCategory> products = await _customerService.GetProductCategoryRightJoin();
             Table tbl = new Table("categoryName","ProductName", "modelYear", "ListPrice");
@@ -96,8 +96,8 @@ namespace BikeStores.Api.Controllers
             return products;
         }
 
-        [HttpGet("GetManagerNames")]
-        public async Task<ActionResult<List<StaffSelfJoin>>> GetManagerNames()
+        [HttpGet("GetStaffSelfJoin")]
+        public async Task<ActionResult<List<StaffSelfJoin>>> GetStaffSelfJoin()
         {
             List<StaffSelfJoin> managers = await _customerService.GetStaffManagerJoin();
             Table tbl = new Table("StaffName", "ManagerName");
@@ -111,8 +111,8 @@ namespace BikeStores.Api.Controllers
         }
 
 
-        [HttpGet("GetPrductNameAndOrderDiscountInnerJoin")]
-        public async Task<ActionResult<List<ProductsOrderItemsInnerJoin>>> GetPrductNameAndOrderDiscountInnerJoin()
+        [HttpGet("GetProductAndOrderItemsInnerJoin")]
+        public async Task<ActionResult<List<ProductsOrderItemsInnerJoin>>> GetProductAndOrderItemsInnerJoin()
         {
             List<ProductsOrderItemsInnerJoin> productsOrderItemsInners = await _customerService.GetProdAndOrdItemsInnerJoin();
 
@@ -146,8 +146,8 @@ namespace BikeStores.Api.Controllers
             return Ok(highestDiscounts);
         }
 
-        [HttpGet("OrderAgainstProductNamePriceID")]
-        public async Task<List<OrderAgainstProductNamePriceID>> OrderAgainstProductNamePriceID()
+        [HttpGet("OrderForProductNamePriceID")]
+        public async Task<List<OrderAgainstProductNamePriceID>> OrderForProductNamePriceID()
         {
             List<OrderAgainstProductNamePriceID> productNamePriceIDs = await _customerService.OrderForEachProductNamePriceID();
 
@@ -163,13 +163,7 @@ namespace BikeStores.Api.Controllers
             return productNamePriceIDs;
         }
 
-        [HttpGet("ExecuteMethod/{id}")]
-        //[("Adds a new pet using the properties supplied, returns a GUID reference for the pet created.")]
-
-        public IActionResult ExecuteMethod( int id)
-        {
-            return Ok(id);
-        }
+       
         
     }
 }

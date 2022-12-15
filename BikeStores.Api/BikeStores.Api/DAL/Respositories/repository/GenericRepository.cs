@@ -25,7 +25,7 @@ namespace BikeStores.Api.DAL.Respositories.repository
             _context = context;
         }
 
-
+        //--1--
         //SELECT city, COUNT(*)
         // as TotalCustomers
         //FROM sales.customers
@@ -43,7 +43,6 @@ namespace BikeStores.Api.DAL.Respositories.repository
 
         //select concat(c.first_name , ' ' , c.last_name) as customername, c.email, c.city, c.state , o.order_id 
         //, t.product_id, t.quantity, t.list_price, t.discount
-
         //from sales.customers c
         //left join sales.orders o
         //on o.customer_id = c.customer_id
@@ -52,11 +51,7 @@ namespace BikeStores.Api.DAL.Respositories.repository
         //order by customername
         public async Task<List<OrderItemAgainstEachCustomerAndOrder>> GetOrderCustomerAndOrderItemsLeftJoin()
         {
-            //IQueryable<string> CustomerName = (from cust in _context.Customers
-            //                                   select cust.FirstName)
-            //                                  .Concat
-            //                                  (from cust in _context.Customers
-            //                                   select cust.LastName);
+           
 
 
 
@@ -96,6 +91,7 @@ namespace BikeStores.Api.DAL.Respositories.repository
 
         }
 
+        //--3--
         //SELECT c.category_name, p.product_name, p.model_year, p.list_price
         //FROM production.categories c
         //RIGHT JOIN production.products p
@@ -116,7 +112,7 @@ namespace BikeStores.Api.DAL.Respositories.repository
         }
 
 
-
+        //--4--
         //SELECT p.product_id, p.product_name, COUNT(*)
         // as TotalOrdersForEachProduct
         //FROM sales.order_items o
@@ -160,6 +156,7 @@ namespace BikeStores.Api.DAL.Respositories.repository
                                            
         }
 
+        //--5--
         //SELECT CONCAT(a.first_name, ' ', a.last_name) AS "Staff Name",
         //CONCAT(b.first_name, ' ', b.last_name) AS "Manager Name"
         //FROM sales.staffs a, sales.staffs b
@@ -178,7 +175,7 @@ namespace BikeStores.Api.DAL.Respositories.repository
             return selfJoins;
         }
 
-
+        //--6--
         //SELECT p.product_id, p.product_name, o.list_price, o.discount
         //FROM production.products As p
         //INNER JOIN sales.order_items As o
@@ -199,35 +196,7 @@ namespace BikeStores.Api.DAL.Respositories.repository
             return innerJoinQuery;
         }
 
-
-        //Select Distinct s1.discount
-        //from sales.order_items s1 WHERE 2-1 = 
-        //(Select COUNT(Distinct s2.discount)
-        //From sales.order_items s2
-        //WHERE s1.discount<s2.discount)
-
-
-
-        public async Task<List<HighestDiscount>> GetHighestDiscountAsync(int number)
-        {
-            List<HighestDiscount> query = await (from o in _context.OrderItems
-                                                 group o by o.Discount into gr
-                                                 select new HighestDiscount
-                                                 {
-                                                     discount = gr.OrderByDescending(d => d.Discount)
-                                                                .Distinct()
-                                                                .Skip(number - 1)
-                                                                .FirstOrDefault()
-                                                                .Discount
-
-                                                 }).ToListAsync();
-
-            //var query = await (from s1 in _context.OrderItems where 1 >
-            //                                     (from s2 in _context.OrderItems where 
-            //                                      s2.Discount < s1.Discount select s2.Discount).Distinct().Count() 
-            //                                     select s1.Discount).Distinct().ToListAsync();
-            return query;
-        }
+        //--7--
         //Select Distinct s1.discount
         //from sales.order_items s1 WHERE 1-1= 
         //(Select COUNT(Distinct s2.discount)
