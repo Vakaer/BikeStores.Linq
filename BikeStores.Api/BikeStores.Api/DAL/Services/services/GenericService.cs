@@ -58,5 +58,11 @@ namespace BikeStores.Api.DAL.Services.services
             List<decimal> highestDiscounts = await _customerRepository.GetHighestDiscount(number);
             return highestDiscounts;
         }
+
+        public async Task<List<OrderAgainstProductNamePriceID>> OrderForEachProductNamePriceID()
+        {
+            List<OrderAgainstProductNamePriceID> orderAgainstProducts = await _customerRepository.OrderForProductNamePriceID();
+            return orderAgainstProducts;
+        }
     }
 }

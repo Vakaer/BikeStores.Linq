@@ -24,16 +24,16 @@ namespace BikeStores.Api.DAL.Respositories.repository
         {
             _context = context;
         }
-        
 
-        //SELECT city , COUNT(*)
+
+        //SELECT city, COUNT(*)
         // as TotalCustomers
         //FROM sales.customers
         //GROUP BY city
         public async Task<List<CustomerCount>> GetcustomersCity()
         {
-            List<CustomerCount> finalCustomerslist = await _context.Customers.GroupBy(p => p.State)
-                                           .Select(p => new CustomerCount { State = p.Key, Count = p.Count() })
+            List<CustomerCount> finalCustomerslist = await _context.Customers.GroupBy(p => p.City)
+                                           .Select(p => new CustomerCount { City = p.Key, Count = p.Count() })
                                            .ToListAsync();
             return finalCustomerslist;
         }
@@ -63,12 +63,6 @@ namespace BikeStores.Api.DAL.Respositories.repository
             IQueryable<OrderItemAgainstEachCustomerAndOrder> result = (from cust in _context.Customers
                                                                       join order in _context.Orders on cust.CustomerId equals order.CustomerId into orders
                                                                       from order in orders.DefaultIfEmpty()
-                                                                      let oCount =
-                                                                      (
-                                                                          from o in _context.Orders
-                                                                          where o.OrderId == order.OrderId
-                                                                          select o
-                                                                      ).Count()
                                                                       let fullname = cust.FirstName + " " + cust.LastName
                                                                       join ordIt in _context.OrderItems on order.OrderId equals ordIt.OrderId into orderItems
                                                                       from ordIt in orderItems.DefaultIfEmpty()
@@ -84,7 +78,6 @@ namespace BikeStores.Api.DAL.Respositories.repository
                                                                           lastName = cust.LastName,
                                                                           state = cust.State,
                                                                           orderId = order.OrderId,
-                                                                          orderCount = oCount,
                                                                           productid = ordIt.ProductId,
                                                                           quantity = ordIt.Quantity,
                                                                           listPrice = ordIt.ListPrice,
@@ -103,7 +96,7 @@ namespace BikeStores.Api.DAL.Respositories.repository
 
         }
 
-        //SELECT  c.category_name, p.product_name, p.model_year, p.list_price
+        //SELECT c.category_name, p.product_name, p.model_year, p.list_price
         //FROM production.categories c
         //RIGHT JOIN production.products p
         //ON p.category_id = c.category_id
@@ -124,10 +117,13 @@ namespace BikeStores.Api.DAL.Respositories.repository
 
 
 
-        //SELECT product_id, COUNT(*)
+        //SELECT p.product_id, p.product_name, COUNT(*)
         // as TotalOrdersForEachProduct
-        //FROM sales.order_items
-        //GROUP BY product_id
+        //FROM sales.order_items o
+        //Inner join production.products p
+        //on o.product_id = p.product_id
+        //GROUP BY p.product_id , p.product_name
+        //order by product_id
         public async Task<List<OrderCount>> GetTotalOrdersAgainstEachProduct()
         {
             var ordersCount = _context.OrderItems
@@ -139,20 +135,23 @@ namespace BikeStores.Api.DAL.Respositories.repository
                                               
                                            })
                                            .OrderBy(p => p.productId).ToList();
-            List<OrderCount> orderCountsList = (from p in _context.Products
-                                 join ordIt in _context.OrderItems on p.ProductId equals ordIt.ProductId into productItems
-                                 from ordIt in productItems.DefaultIfEmpty()
+            List<OrderCount> orderCountsList = (from ordIt in _context.OrderItems
+                                 join p in _context.Products on ordIt.ProductId equals p.ProductId into productItems
+                                 from p in productItems.DefaultIfEmpty()
                                 
-                                   group p by p.ProductName into grp
-                                   where grp.Count() < 10 
+                                   group p by new
+                                   {
+                                       p.ProductId,
+                                       p.ProductName
+                                   } into grp
                                    select new OrderCount
                                  {
-                                    
-                                     productName = grp.Key,
+                                     productId = grp.Key.ProductId,
+                                     productName = grp.Key.ProductName,
                                      OrdersCount = grp.Count()
                                      
 
-                                 }).ToList();
+                                 }).OrderBy(p => p.productId).ToList();
 
 
              
@@ -161,24 +160,26 @@ namespace BikeStores.Api.DAL.Respositories.repository
                                            
         }
 
-        //SELECT a.first_name AS "Staff Name",
-        //b.first_name AS "Manager Name"
+        //SELECT CONCAT(a.first_name, ' ', a.last_name) AS "Staff Name",
+        //CONCAT(b.first_name, ' ', b.last_name) AS "Manager Name"
         //FROM sales.staffs a, sales.staffs b
         //WHERE a.manager_id = b.staff_id;
         public async Task<List<StaffSelfJoin>> GetStaffSelfJoin()
         {
-            List<StaffSelfJoin> SelfJoinQuery =await (from s in _context.Set<Staff>()
-                                join s1 in _context.Set<Staff>() on s.StaffId equals s1.ManagerId
-                                select new StaffSelfJoin
-                                {
-                                    staffName = s.FirstName + " " + s.LastName,
-                                    managerName = s1.FirstName + " " + s.LastName,
-                                }).ToListAsync();
-            return SelfJoinQuery;
+           
+            List<StaffSelfJoin> selfJoins = await (from s1 in _context.Set<Staff>()
+                                             from s2 in _context.Set<Staff>()
+                                             where s1.StaffId == s2.ManagerId
+                                             select new StaffSelfJoin
+                                             {
+                                                 staffName = (s2.FirstName + " " + s2.LastName),
+                                                 managerName = (s1.FirstName + " " + s1.LastName)
+                                             }).ToListAsync();
+            return selfJoins;
         }
 
 
-        //SELECT p.product_id,p.product_name, o.list_price,o.discount
+        //SELECT p.product_id, p.product_name, o.list_price, o.discount
         //FROM production.products As p
         //INNER JOIN sales.order_items As o
         //ON p.product_id = o.product_id
@@ -227,11 +228,11 @@ namespace BikeStores.Api.DAL.Respositories.repository
             //                                     select s1.Discount).Distinct().ToListAsync();
             return query;
         }
-//        Select Distinct s1.discount
-//from sales.order_items s1 WHERE 1-1= 
-//        (Select COUNT(Distinct s2.discount)
-//        From sales.order_items s2
-//        WHERE s1.discount<s2.discount)
+        //Select Distinct s1.discount
+        //from sales.order_items s1 WHERE 1-1= 
+        //(Select COUNT(Distinct s2.discount)
+        //From sales.order_items s2
+        //WHERE s1.discount<s2.discount)
 
 
         public async Task<List<decimal>> GetHighestDiscount(int number)
@@ -255,5 +256,48 @@ namespace BikeStores.Api.DAL.Respositories.repository
 
             return query;
         }
+
+
+
+
+
+        //8-- SHOWS NUMBER OF ORDERS AGAINST EACH PRODUCT NAME, LIST_PRICE & PRODUCT_ID
+
+        //SELECT p.product_name, p.list_price, p.product_id, COUNT(*)
+        // AS ORDERS
+        //FROM production.products p
+        //LEFT OUTER JOIN sales.order_items o
+        //ON o.product_id = p.product_id
+        //GROUP BY p.product_id, p.product_name, p.list_price
+        //HAVING COUNT(*)
+        //BETWEEN 50 AND 99
+
+
+        public async Task<List<OrderAgainstProductNamePriceID>> OrderForProductNamePriceID()
+        {
+            var query = await (from p in _context.Products
+                        join o in _context.OrderItems 
+                        on p.ProductId equals o.ProductId
+                        into orderedProducts
+                        from products in orderedProducts.DefaultIfEmpty()
+                        group products by new
+                        {
+                            p.ProductId,
+                            p.ProductName,
+                            p.ListPrice,
+
+                        } into grp
+                        where (grp.Count() > 50 && grp.Count() < 99)
+                        select new OrderAgainstProductNamePriceID
+                        {
+                            productId = grp.Key.ProductId,
+                            productName = grp.Key.ProductName,
+                            listPrice = grp.Key.ListPrice,
+                            orderCount = grp.Count()
+                        }).ToListAsync();
+            return query;
+        }
+
+
     }
 }

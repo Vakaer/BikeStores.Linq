@@ -5,6 +5,7 @@ using BikeStores.Api.ViewModel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using System;
 using System.Collections.Generic;
 
 namespace BikeStores.Api.Controllers
@@ -30,7 +31,7 @@ namespace BikeStores.Api.Controllers
             foreach (var item in customers)
             {
                 
-                tbl.AddRow(item.State, item.Count);
+                tbl.AddRow(item.City, item.Count);
 
             }
             tbl.Print();
@@ -42,7 +43,7 @@ namespace BikeStores.Api.Controllers
         {
 
             List<OrderItemAgainstEachCustomerAndOrder> customers = await _customerService.GetOrderCustomerAndOrderItemsLeftJoin();
-            Table tbl = new Table("fullName", "email", "city", "state", "orderId", "productid", "quantity", "listPrice", "discount","count");
+            Table tbl = new Table("fullName", "email", "city", "state", "orderId", "productid", "quantity", "listPrice", "discount");
 
             foreach (var item in customers)
             {
@@ -57,8 +58,7 @@ namespace BikeStores.Api.Controllers
                         item.productid,
                         item.quantity,
                         item.listPrice,
-                        item.discount,
-                        item.orderCount
+                        item.discount
                         
                     );
 
@@ -72,11 +72,11 @@ namespace BikeStores.Api.Controllers
         public async Task<ActionResult<List<OrderCount>>> GetOrderCountAgainstProduct()
         {
             List<OrderCount> orders = await _customerService.GetTotalOrdersAgainstEachProduct();
-            Table tbl = new Table("ProductName", "OrderCount");
+            Table tbl = new Table("productId", "ProductName", "OrderCount");
 
             foreach (OrderCount item in orders)
             {
-                tbl.AddRow(item.productName, item.OrdersCount);
+                tbl.AddRow(item.productId, item.productName, item.OrdersCount);
             }
             tbl.Print();
             return orders;
@@ -111,8 +111,8 @@ namespace BikeStores.Api.Controllers
         }
 
 
-        [HttpGet("GetPrductNameAndOrderDiscount")]
-        public async Task<ActionResult<List<ProductsOrderItemsInnerJoin>>> GetPrductNameAndOrderDiscount()
+        [HttpGet("GetPrductNameAndOrderDiscountInnerJoin")]
+        public async Task<ActionResult<List<ProductsOrderItemsInnerJoin>>> GetPrductNameAndOrderDiscountInnerJoin()
         {
             List<ProductsOrderItemsInnerJoin> productsOrderItemsInners = await _customerService.GetProdAndOrdItemsInnerJoin();
 
@@ -146,7 +146,22 @@ namespace BikeStores.Api.Controllers
             return Ok(highestDiscounts);
         }
 
+        [HttpGet("OrderAgainstProductNamePriceID")]
+        public async Task<List<OrderAgainstProductNamePriceID>> OrderAgainstProductNamePriceID()
+        {
+            List<OrderAgainstProductNamePriceID> productNamePriceIDs = await _customerService.OrderForEachProductNamePriceID();
 
+            Table tbl = new Table( "productName", "listPrice", "productId", "TotalOrders");
+
+            foreach (OrderAgainstProductNamePriceID prod in productNamePriceIDs)
+            {
+                tbl.AddRow(prod.productName, prod.listPrice, prod.productId, prod.orderCount);
+            }
+
+
+            tbl.Print();
+            return productNamePriceIDs;
+        }
 
         [HttpGet("ExecuteMethod/{id}")]
         //[("Adds a new pet using the properties supplied, returns a GUID reference for the pet created.")]

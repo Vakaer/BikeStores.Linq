@@ -12,5 +12,6 @@ namespace BikeStores.Api.DAL.Services.contracts
         Task<List<StaffSelfJoin>> GetStaffManagerJoin();
         Task<List<ProductsOrderItemsInnerJoin>> GetProdAndOrdItemsInnerJoin();
         Task<List<decimal>> HighestDiscount(int number);
+        Task<List<OrderAgainstProductNamePriceID>> OrderForEachProductNamePriceID();
     }
 }
