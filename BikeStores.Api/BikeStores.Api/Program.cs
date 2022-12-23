@@ -15,6 +15,23 @@ namespace BikeStores.Api
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            builder.WebHost.UseUrls("http://*:5252");
+
+            // AddCors
+            string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy(name: MyAllowSpecificOrigins,
+                                  policy =>
+                                  {
+                                      policy.WithOrigins("http://*:5252")
+                                        .AllowAnyOrigin()
+                                        .AllowAnyHeader()
+                                        .AllowAnyMethod();
+                                  });
+            });
+            
+
             //repositories
             builder.Services.AddScoped<IContract, GenericRepository>();
            
@@ -72,14 +89,12 @@ namespace BikeStores.Api
 
             app.UseAuthorization();
 
-
+            app.UseCors(MyAllowSpecificOrigins);
             app.MapControllers();
 
             app.Run();
 
 
-
-           
 
         }
     }
